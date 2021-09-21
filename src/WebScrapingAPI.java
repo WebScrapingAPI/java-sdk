@@ -50,10 +50,11 @@ public class WebScrapingAPI {
         connection.setReadTimeout(30000);
 
         // Set headers
-        if (headers != null)
+        if (headers != null) {
             for (Map.Entry<String, String> entry : headers.entrySet()) {
                 connection.setRequestProperty(entry.getKey(), entry.getValue());
-            }
+            }	
+        }
 
         // Set data
         if (data != null) {
