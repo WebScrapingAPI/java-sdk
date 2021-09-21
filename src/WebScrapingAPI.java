@@ -5,6 +5,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 
 public class WebScrapingAPI {
@@ -32,8 +33,9 @@ public class WebScrapingAPI {
         api_key = key;
     }
 
-    private StringBuffer request(String method, Map<String, String> params, Map<String, String> headers, Map<String, String> data) throws IOException {
-
+    private HashMap<String, String> request(String method, Map<String, String> params, Map<String, String> headers, Map<String, String> data) throws IOException {
+        HashMap<String, String> response = new HashMap<>();
+    	
         // Prepare the url
         String prepare_url = "https://api.webscrapingapi.com/v1?api_key=" + this.api_key + "&" + urlEncodeUTF8(params);
 
@@ -64,10 +66,13 @@ public class WebScrapingAPI {
 
         BufferedReader streamReader;
 
-        if (status > 299)
+        if (status > 299) {
             streamReader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
-        else
+        	response.put("status", "false");
+        } else {
             streamReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            response.put("status", "true");
+        }
 
         String inputLine;
         StringBuffer content = new StringBuffer();
@@ -75,17 +80,19 @@ public class WebScrapingAPI {
             content.append(inputLine);
         }
 
+        response.put("message", content.toString());
+        
         streamReader.close();
         connection.disconnect();
 
-        return content;
+        return response;
     }
 
-    public StringBuffer get(Map<String, String> params, Map<String, String> headers) throws IOException {
+    public HashMap<String, String> get(Map<String, String> params, Map<String, String> headers) throws IOException {
         return request("GET", params, headers, null);
     }
 
-    public StringBuffer post(Map<String, String> params, Map<String, String> headers, Map<String, String> data) throws IOException {
+    public HashMap<String, String> post(Map<String, String> params, Map<String, String> headers, Map<String, String> data) throws IOException {
         return request("POST", params, headers, data);
     }
 }
