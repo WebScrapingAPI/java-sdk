@@ -3,3 +3,5 @@ out
 .project
 .classpath
 bin
+/target
+pom.xml
